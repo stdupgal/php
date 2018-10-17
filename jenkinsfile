@@ -1,0 +1,21 @@
+pipeline {
+    agent any
+    stages {
+    stage('Build') {
+        steps {
+            script {
+                openshift.withCluster() {
+                    openshift.withProject() {
+                        openshift.startBuild("php").logs('-f')
+                    }
+                }
+            }
+        }
+    }
+    stage('Test') {
+        steps {
+        sh "curl -s -X GET http://php:8080/health"        
+        }
+    }
+    }
+}
